@@ -2,7 +2,7 @@
 FROM node:14
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /node
 
 # Copy the package.json and package-lock.json files
 COPY package*.json ./
@@ -11,10 +11,14 @@ COPY package*.json ./
 RUN npm install
 
 # Copy the rest of the application code to the container
-COPY . /app/
+COPY . /node/
 
-# Expose port 3000
-EXPOSE 3000
+# Make wait-for-it.sh executable
+RUN chmod +x /node/wait-for-it.sh
 
-# Run the application
-CMD ["npm", "start"]
+# Expose port 3001
+EXPOSE 3001
+
+# Run the wait-for-it.sh script and then start the Node.js application
+CMD ["./wait-for-it.sh", "mongo:27017", "--", "npm", "start"]
+
